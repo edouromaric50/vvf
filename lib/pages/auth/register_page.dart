@@ -19,6 +19,7 @@ class RegisterPage extends ConsumerStatefulWidget {
 }
 
 class _RegisterPageState extends ConsumerState<RegisterPage> {
+  final pseudoController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final cpasswordController = TextEditingController();
@@ -42,68 +43,65 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 AppImage(
-                  url: "assets/img/login.png",
+                  url: "assets/img/logo.png",
                   width: getSize(context).width / 2,
-                ),
-                const AppText(
-                  "Welcome here",
-                  size: 26,
-                  weight: FontWeight.bold,
-                  isNormal: false,
-                ),
-                const AppText(
-                  "Create your account to login in",
-                  isNormal: false,
                 ),
                 const SpacerHeight(
                   height: 30,
                 ),
-                SimpleFormField(
-                  controller: emailController,
-                  validation: ValidationBuilder().email(),
-                  inputType: TextInputType.emailAddress,
-                  radius: 30,
-                  hintText: "Email",
-                ),
-                SpacerHeight(),
-                SimpleFormField(
-                  controller: passwordController,
+                SimpleFilledFormField(
+                  controller: pseudoController,
                   validation: ValidationBuilder(),
-                  obscure: hidePassword,
-                  suffixI: IconButton(
-                      onPressed: () {
-                        hidePassword = !hidePassword;
-                        log(hidePassword);
-                        setState(() {});
-                      },
-                      icon: hidePassword
-                          ? const Icon(Icons.remove_red_eye)
-                          : const Icon(Icons.password_outlined)),
-                  radius: 30,
-                  hintText: "Mot de passe",
+                  inputType: TextInputType.name,
+                  radius: 10,
+                  hintText: ('Votre surnom'),
                 ),
                 const SpacerHeight(),
-                SimpleFormField(
-                  controller: cpasswordController,
-                  validation: ValidationBuilder().add((value) {
-                    if (value!.trim() != passwordController.text.trim()) {
-                      return "Les deux mots de passe ne correspondent pas";
-                    }
-                    return null;
-                  }),
-                  obscure: hidePassword,
-                  suffixI: IconButton(
-                      onPressed: () {
-                        hidePassword = !hidePassword;
-                        log(hidePassword);
-                        setState(() {});
-                      },
-                      icon: hidePassword
-                          ? const Icon(Icons.remove_red_eye)
-                          : const Icon(Icons.password_outlined)),
-                  radius: 30,
-                  hintText: "Confirmer le mot de passe",
+                SimpleFilledFormField(
+                  controller: emailController,
+                  validation: ValidationBuilder(),
+                  inputType: TextInputType.emailAddress,
+                  radius: 10,
+                  hintText: ('Email'),
                 ),
+                const SpacerHeight(),
+                SimpleFilledFormField(
+                    controller: passwordController,
+                    validation: ValidationBuilder(),
+                    inputType: TextInputType.emailAddress,
+                    radius: 10,
+                    obscure: hidePassword,
+                    suffixI: IconButton(
+                        onPressed: () {
+                          hidePassword = !hidePassword;
+                          log(hidePassword);
+                          setState(() {});
+                        },
+                        icon: hidePassword
+                            ? const Icon(Icons.remove_red_eye)
+                            : const Icon(Icons.password_outlined)),
+                    hintText: "mot de passe"),
+                const SpacerHeight(),
+                SimpleFilledFormField(
+                    controller: cpasswordController,
+                    validation: ValidationBuilder().add((value) {
+                      if (value!.trim() != passwordController.text.trim()) {
+                        return "Les deux mots de passe ne correspondent pas";
+                      }
+                      return null;
+                    }),
+                    radius: 10,
+                    obscure: hidePassword,
+                    suffixI: IconButton(
+                        onPressed: () {
+                          hidePassword = !hidePassword;
+                          log(hidePassword);
+                          setState(() {});
+                        },
+                        icon: hidePassword
+                            ? const Icon(Icons.remove_red_eye)
+                            : const Icon(Icons.password_outlined)),
+                    hintText: "Confirmer le mot de passe"),
                 const SpacerHeight(
                   height: 30,
                 ),
@@ -114,13 +112,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       setState(() {
                         isLoading = true;
                       });
-                      String error = await  ref.read(authController).register(emailController.text.trim(), passwordController.text.trim());
+                      String error = await ref.read(authController).register(
+                          emailController.text.trim(),
+                          passwordController.text.trim());
                       setState(() {
                         isLoading = false;
                       });
-                      if(error.isEmpty){
-                        showSuccessError(context, "Compte créé avec succès", widget: HomePage(), back: false);
-                      }else{
+                      if (error.isEmpty) {
+                        showSuccessError(context, "Compte créé avec succès",
+                            widget: HomePage(), back: false);
+                      } else {
                         showSnackbar(context, error);
                       }
                     }
@@ -137,8 +138,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                     onTap: () {
                       navigateToWidget(context, const LoginPage(), back: false);
                     },
-                    child:
-                        AppText("Vous avez  déjà un compte? Connectez-vous")),
+                    child: const AppText(
+                        "Vous avez  déjà un compte? Connectez-vous")),
               ],
             ),
           ),

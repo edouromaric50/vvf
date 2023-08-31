@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../utils/app_const.dart';
+//import '../utils/app_const.dart';
 import '../utils/app_func.dart';
 import 'app_text.dart';
 
@@ -21,7 +21,7 @@ class AppButtonRound extends StatelessWidget {
       this.textSize = 18,
       this.textColor = Colors.white,
       this.backgroundColor = Colors.black,
-      this.radius = 25,
+      this.radius = 12,
       this.width,
       this.prefix,
       required this.onTap,
@@ -36,7 +36,8 @@ class AppButtonRound extends StatelessWidget {
         height: 55,
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 13),
         decoration: BoxDecoration(
-            color: backgroundColor, borderRadius: BorderRadius.circular(radius)),
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(radius)),
         child: Center(
             child: isLoading
                 ? const SizedBox(
@@ -46,21 +47,22 @@ class AppButtonRound extends StatelessWidget {
                       color: Colors.white,
                     ))
                 : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if(prefix!=null)
-                      prefix!,
-                    if(prefix!=null)
-                      const SizedBox(width: 20,),
-                    AppText(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (prefix != null) prefix!,
+                      if (prefix != null)
+                        const SizedBox(
+                          width: 20,
+                        ),
+                      AppText(
                         text,
                         size: textSize,
                         weight: FontWeight.w400,
                         color: textColor,
                         align: TextAlign.center,
                       ),
-                  ],
-                )),
+                    ],
+                  )),
       ),
     );
   }

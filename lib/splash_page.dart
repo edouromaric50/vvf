@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:testproject/components/app_image.dart';
@@ -5,9 +6,8 @@ import 'package:testproject/components/app_text.dart';
 import 'package:testproject/home_page.dart';
 import 'package:testproject/pages/auth/login_page.dart';
 import 'package:testproject/utils/app_func.dart';
-import 'package:testproject/utils/app_pref.dart';
+//import 'package:testproject/utils/app_pref.dart';
 import 'package:testproject/utils/providers.dart';
-
 
 //ref.read()
 final nbTimes = Provider<int>((ref) => 50);
@@ -21,7 +21,6 @@ class SplashPage extends ConsumerStatefulWidget {
 }
 
 class _SplashPageState extends ConsumerState<SplashPage> {
-
   @override
   void initState() {
     super.initState();
@@ -31,26 +30,36 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SizedBox(
-        width : getSize(context) . width,
-        height: getSize(context) . height,
+        width: getSize(context).width,
+        height: getSize(context).height,
         child: Stack(
           children: [
             Center(
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: const AppImage(url: "assets/img/logo_def.jpg", width: 250, height: 250,)),
+                  child: const AppImage(
+                    url: "assets/img/logo.png",
+                    width: 250,
+                    height: 250,
+                  )),
             ),
-
-            Positioned(
+            const Positioned(
                 bottom: 40,
                 left: 0,
                 right: 0,
                 child: Column(
-                  children: const [
-                    AppText("Votre assistant parfait..", weight: FontWeight.bold,),
-                    SizedBox(height: 20,),
-                    CircularProgressIndicator(),
+                  // ignore: unnecessary_const
+                  children: [
+                    AppText(
+                      "Votre assistante financière",
+                      weight: FontWeight.bold,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CupertinoActivityIndicator(),
                   ],
                 ))
           ],
@@ -60,7 +69,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   }
 
   void setupTimer() {
-    Future.delayed(const Duration(seconds: 4), () async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       //  bool homeP = PreferenceHelper.getBool("home");
       //
       ref.read(firebaseMessaging).subscribeToTopic("all_users");
@@ -68,7 +77,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       // if(user...is..femme)
       // ref.read(firebaseMessaging).subscribeToTopic("all_femmes");
 
-      if(ref.read(mAuth).currentUser==null){
+      if (ref.read(mAuth).currentUser == null) {
         navigateToWidget(context, const LoginPage());
       } else {
         log(ref.read(mAuth).currentUser!.uid);
@@ -77,5 +86,3 @@ class _SplashPageState extends ConsumerState<SplashPage> {
     });
   }
 }
-
-
