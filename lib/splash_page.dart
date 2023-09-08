@@ -1,8 +1,12 @@
+//import 'dart:ffi';
+
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:testproject/components/app_image.dart';
 import 'package:testproject/components/app_text.dart';
+//import 'package:testproject/controllers/user_controller.dart';
 import 'package:testproject/home_page.dart';
 import 'package:testproject/pages/auth/login_page.dart';
 import 'package:testproject/utils/app_func.dart';
@@ -80,7 +84,17 @@ class _SplashPageState extends ConsumerState<SplashPage> {
       if (ref.read(mAuth).currentUser == null) {
         navigateToWidget(context, const LoginPage());
       } else {
-        log(ref.read(mAuth).currentUser!.uid);
+        await ref.read(userController).setupUser();
+        // @override
+        // void reassemmble() {
+        //   super.reassemble();
+        // }
+
+        // var user = await ref.read(userController).getCurrentUser();
+        // ref.read(me.notifier).state = user;
+        // //log(ref.read(mAuth).currentUser!.uid);
+
+        // ignore: use_build_context_synchronously
         navigateToWidget(context, const HomePage(), back: false);
       }
     });

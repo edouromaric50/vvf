@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:form_validator/form_validator.dart';
@@ -25,6 +26,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   bool hidePassword = true;
   bool isLoading = false;
+  bool isLoadingApple = false;
+  bool isLoadingGoogle = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,16 +55,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     validation: ValidationBuilder(),
                     inputType: TextInputType.emailAddress,
                     radius: 10,
-                    obscure: hidePassword,
                     hintText: "Email"),
                 const SpacerHeight(),
                 const SpacerHeight(
                   height: 30,
                 ),
                 SimpleFilledFormField(
-                    controller: emailController,
+                    controller: passwordController,
                     validation: ValidationBuilder(),
-                    inputType: TextInputType.emailAddress,
+                    inputType: TextInputType.visiblePassword,
                     radius: 10,
                     obscure: hidePassword,
                     suffixI: IconButton(
@@ -113,15 +115,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     InkWell(
-                      onTap: () {},
+                      onTap: () async {
+                        if (key.currentState!.validate()) {
+                          setState(() {
+                            isLoadingGoogle = true;
+                          });
+                          String? error = await ref
+                              .read(authController)
+                              .handleGoogleSignIn();
+                          setState(() {
+                            isLoadingGoogle = false;
+                          });
+                          if (error!.isEmpty) {
+                            showSuccessError(
+                                context, "Nous sommes ravis de vous revoir",
+                                widget: HomePage(), back: false);
+                          } else {
+                            showSnackbar(context, error);
+                          }
+                        }
+                      },
                       child: CircleAvatar(
                         backgroundColor: Colors.red,
-                        child: Image.asset(
-                          "assets/img/google.png",
-                          width: 30,
-                          height: 30,
-                          color: Colors.white,
-                        ),
+                        child: isLoadingGoogle
+                            ? const CupertinoActivityIndicator()
+                            : Image.asset(
+                                "assets/img/google.png",
+                                width: 30,
+                                height: 30,
+                                color: Colors.white,
+                              ),
                       ),
                     ),
                     SizedBox(
@@ -131,12 +154,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       onTap: () {},
                       child: CircleAvatar(
                         backgroundColor: Colors.black,
-                        child: Image.asset(
-                          "assets/img/apple.png",
-                          width: 30,
-                          height: 30,
-                          color: Colors.white,
-                        ),
+                        child: isLoadingApple
+                            ? const CupertinoActivityIndicator()
+                            : Image.asset(
+                                "assets/img/apple.png",
+                                width: 30,
+                                height: 30,
+                                color: Colors.white,
+                              ),
                       ),
                     ),
                   ],

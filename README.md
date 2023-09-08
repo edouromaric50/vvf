@@ -17,6 +17,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ========================================================================================
 
+
 #le keystore 
 
 What is the two-letter country code for this unit?
@@ -82,3 +83,8 @@ Version: 1
 Warning:
 The certificate uses the SHA1withRSA signature algorithm which is considered a security risk. This algorithm will be disabled in a future update.
 The JKS keystore uses a proprietary format. It is recommended to migrate to PKCS12 which is an industry standard format using "keytool -importkeystore -srckeystore debug.keystore -destkeystore debug.keystore -deststoretype pkcs12".
+
+
+
+git add .  # Ajoute tous les fichiers modifiés et nouveaux
+git commit -m "Premier commit"  # Crée un commit avec un message

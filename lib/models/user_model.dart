@@ -1,18 +1,21 @@
 //import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'package:flutter/scheduler.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:flutter/scheduler.dart';
 
 class UserModel {
   final String firstname;
   final String lastname;
   final String email;
+  late final String fcm;
   final int createdAt;
-  final String userId;
+  late final String userId;
 
   UserModel({
     required this.firstname,
     required this.lastname,
     required this.email,
+    required this.fcm,
     required this.createdAt,
     required this.userId,
   });
@@ -24,6 +27,7 @@ class UserModel {
           firstname == other.firstname &&
           lastname == other.lastname &&
           email == other.email &&
+          fcm == other.fcm &&
           createdAt == other.createdAt &&
           userId == other.userId);
 
@@ -32,24 +36,20 @@ class UserModel {
       firstname.hashCode ^
       lastname.hashCode ^
       email.hashCode ^
+      fcm.hashCode ^
       createdAt.hashCode ^
       userId.hashCode;
 
   @override
   String toString() {
-    return 'UserModel{'
-            'firstname: $firstname,' +
-        ' lastname: $lastname,' +
-        ' email: $email,' +
-        'createdAt: $createdAt,' +
-        'userId:$userId,' +
-        '}';
+    return 'UserModel{firstname: $firstname, lastname: $lastname, email: $email,createdAt: $createdAt,fcm: $fcm,userId:$userId,}';
   }
 
   UserModel copyWith({
     String? firstname,
     String? lastname,
     String? email,
+    String? fcm,
     int? createdAt,
     String? userId,
   }) {
@@ -57,6 +57,7 @@ class UserModel {
       firstname: firstname ?? this.firstname,
       lastname: lastname ?? this.lastname,
       email: email ?? this.email,
+      fcm: fcm ?? this.fcm,
       createdAt: createdAt ?? this.createdAt,
       userId: userId ?? this.userId,
     );
@@ -64,11 +65,12 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'firstname': this.firstname,
-      'lastname': this.lastname,
-      'email': this.email,
-      'createdAt': this.createdAt,
-      'userId': this.userId,
+      'firstname': firstname,
+      'lastname': lastname,
+      'email': email,
+      'fcm': fcm,
+      'createdAt': createdAt,
+      'userId': userId,
     };
   }
 
@@ -77,8 +79,19 @@ class UserModel {
       firstname: map["firstname"] as String,
       lastname: map["lastname"] as String,
       email: map["email"] as String,
+      fcm: map["fcm"] as String,
       createdAt: map["createdAt"] as int,
       userId: map["userId"] as String,
     );
+  }
+
+  static initial() {
+    return UserModel(
+        firstname: "",
+        lastname: "",
+        email: "",
+        fcm: "",
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        userId: "");
   }
 }

@@ -1,8 +1,11 @@
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:testproject/models/user_model.dart';
 import 'package:testproject/utils/providers.dart';
 
 final getUserId = StateProvider((ref) => ref.read(mAuth).currentUser!.uid);
@@ -12,13 +15,24 @@ class AuthController {
 
   AuthController(this.ref);
 
-  Future<String> register(String email, String password) async {
+  Future<String> register(String email, String password, String pseudo) async {
     String error = "";
     try {
       await ref
           .read(mAuth)
           .createUserWithEmailAndPassword(email: email, password: password)
           .then((value) {});
+      UserModel user = UserModel(
+        firstname: pseudo,
+        lastname: "",
+        email: email,
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        userId: ref.read(mAuth).currentUser!.uid,
+        fcm: await getFcm(),
+      );
+
+      await ref.read(userController).saveUser(user);
+      await ref.read(userController).setupUser();
     } catch (e) {
       print(e);
       error = e.toString();
@@ -33,8 +47,33 @@ class AuthController {
           .read(mAuth)
           .signInWithEmailAndPassword(email: email, password: password)
           .then((value) {});
+      await ref.read(userController).setupUser();
     } catch (e) {
       print(e);
+      error = e.toString();
+    }
+    return error;
+  }
+
+  Future<String?> handleGoogleSignIn() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    String error = "";
+    try {
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        error = "processus annulé";
+        return error;
+      }
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      final UserCredential userCredential =
+          await ref.read(mAuth).signInWithCredential(credential);
+      continueSignIn(userCredential);
+    } catch (e) {
       error = e.toString();
     }
     return error;
@@ -45,7 +84,10 @@ class AuthController {
 
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
     final imageName = 'image_$timestamp.jpg';
-    final uploadTask = ref.read(mStorage).child('images/$imageName').putFile(File(imageFile.path));
+    final uploadTask = ref
+        .read(mStorage)
+        .child('images/$imageName')
+        .putFile(File(imageFile.path));
     uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
       final progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
       print('Upload progress: $progress%');
@@ -53,7 +95,8 @@ class AuthController {
 
     try {
       await uploadTask;
-      final imageUrl = await ref.read(mStorage).child('images/$imageName').getDownloadURL();
+      final imageUrl =
+          await ref.read(mStorage).child('images/$imageName').getDownloadURL();
       return imageUrl;
     } catch (e) {
       print('Error uploading image to Firebase Storage: $e');
@@ -61,4 +104,25 @@ class AuthController {
     }
   }
 
+  getFcm() async {
+    return await ref.read(firebaseMessaging).getToken();
+  }
+
+  Future<void> continueSignIn(UserCredential userCredential) async {
+    UserModel user = await ref.read(userController).getCurrentUser();
+    String name = userCredential.user!.displayName ?? "Anonymat";
+    String email = userCredential.user!.email ?? "";
+    if (user.firstname.isEmpty) {
+      user = user.copyWith(firstname: name);
+    }
+
+    if (user.email.isEmpty) {
+      user = user.copyWith(email: email);
+    }
+
+    user.fcm = await getFcm();
+    user.userId = ref.read(mAuth).currentUser!.uid;
+    await ref.read(UserCredential as ProviderListenable).updateUser(user);
+    await ref.read(UserCredential as ProviderListenable).setupUser(user);
+  }
 }

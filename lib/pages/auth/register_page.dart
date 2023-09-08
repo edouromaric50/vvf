@@ -114,7 +114,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                       });
                       String error = await ref.read(authController).register(
                           emailController.text.trim(),
-                          passwordController.text.trim());
+                          passwordController.text.trim(),
+                          pseudoController.text.trim());
                       setState(() {
                         isLoading = false;
                       });
