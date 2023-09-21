@@ -1,25 +1,26 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:testproject/components/app_image.dart';
+// import 'package:testproject/components/app_image.dart';
 import 'package:testproject/components/app_text.dart';
-import 'package:testproject/pages/auth/categories/home_category.dart';
+import 'package:testproject/controllers/category_controller.dart';
+import 'package:testproject/models/category_model.dart';
+import 'package:testproject/pages/auth/categories/add_category.dart';
 import 'package:testproject/utils/app_const.dart';
 import 'package:testproject/utils/app_func.dart';
 
-class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+class HomeCategory extends ConsumerStatefulWidget {
+  const HomeCategory({super.key});
 
   @override
-  ConsumerState createState() => _HomePageState();
+  HomeCategoryState createState() => HomeCategoryState();
 }
 
-class _HomePageState extends ConsumerState<HomePage>
+class HomeCategoryState extends ConsumerState<HomeCategory>
     with SingleTickerProviderStateMixin {
   late TabController controller;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     controller = TabController(length: 5, vsync: this);
     controller.addListener(() {
@@ -31,48 +32,22 @@ class _HomePageState extends ConsumerState<HomePage>
   @override
   Widget build(BuildContext context) {
     double hCard = 0.50 * getSize(context).height;
-    var menus = [
-      ["money.png", "Caisses", AppColor.caisseColor, Container()],
-      ["closures.png", "Projets", AppColor.projeColor, Container()],
-      [
-        "categories.png",
-        "Categories",
-        AppColor.catgColor,
-        const HomeCategory()
-      ],
-      ["settings.png", "Parametre", AppColor.settingColor, Container()],
-    ];
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: AppColor.catgColor,
         title: AppText(
-          "Solde caisse Epargne",
+          "Dépense en Restauration",
           color: AppColor.white,
+          size: 18,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
-        centerTitle: true,
         elevation: 0,
-        leading: CircleAvatar(
-            child: ClipRRect(
-          borderRadius: BorderRadius.circular(40),
-          child: const AppImage(
-              url: "assets/img/logo.png",
-              width: 35,
-              fit: BoxFit.cover,
-              height: 35),
-        )),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.account_circle_rounded,
-              size: 40,
-            ),
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-        ],
+        centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: Container(
+        height: getSize(context).height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -86,7 +61,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     width: getSize(context).width,
                     height: 100,
                     decoration: const BoxDecoration(
-                        color: AppColor.primary,
+                        color: AppColor.catgColor,
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(48),
                           bottomRight: Radius.circular(48),
@@ -125,70 +100,53 @@ class _HomePageState extends ConsumerState<HomePage>
               ),
             ),
 
-            // Menu
-            Container(
-              width: getSize(context).width,
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              child: GridView.count(
-                // alignment: WrapAlignment.spaceBetween,
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                mainAxisSpacing: 5,
-                crossAxisSpacing: 5,
-                physics: const NeverScrollableScrollPhysics(),
-                children: menus.map((e) => buildMenu(e)).toList(),
-                //  [
-                //  buildMenu(menus),
-                //   buildMenu(),
-                //   buildMenu(),
-                //  buildMenu(),
-                // ],
+            // Categories  List
+
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.2), blurRadius: 2),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //List catégories
+                    Expanded(
+                        child: SingleChildScrollView(
+                      child: ref.watch(getAllCats).when(
+                          data: (data) {
+                            log(data);
+                            return Wrap(
+                              children: data.map((e) => singleCat(e)).toList(),
+                            );
+                          },
+                          error: errorLoading,
+                          loading: loadingError),
+                    )),
+
+                    Divider(),
+                    Center(
+                      child: IconButton(
+                          onPressed: () {
+                            navigateToWidget(context, AddCategory());
+                          },
+                          icon: const Icon(
+                            Icons.add_circle_outline_rounded,
+                            size: 40,
+                            color: AppColor.catgColor,
+                          )),
+                    ),
+                    const SpacerHeight(),
+                  ],
+                ),
               ),
             ),
-
-            const SpacerHeight(
-              height: 40,
-            ),
-            const Center(
-              child: AppText("Version 1.0"),
-            ),
-            const SpacerHeight(
-              height: 40,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildMenu(var menu) {
-    return InkWell(
-      onTap: () {
-        navigateToWidget(context, menu[3]);
-      },
-      child: Container(
-        // width: getSize(context).width / 2 - 5,
-        height: 180,
-        margin: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            color: menu[2], borderRadius: BorderRadius.circular(20)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AppImage(
-              url: "assets/img/${menu[0]}",
-              width: 60,
-            ),
-            const SpacerHeight(),
-            AppText(
-              menu[1],
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              size: 20,
-              weight: FontWeight.bold,
-              color: AppColor.white,
-            ),
-            const SpacerHeight(),
           ],
         ),
       ),
@@ -242,9 +200,9 @@ class _HomePageState extends ConsumerState<HomePage>
                       getTitlesWidget: ((d, data) {
                         log(d);
                         if (d == 0) {
-                          return AppText("Entrée");
+                          return AppText("Principal");
                         }
-                        return AppText("Sorties");
+                        return AppText("Entreprise");
                       }),
                     ),
                   ),
@@ -285,4 +243,23 @@ class _HomePageState extends ConsumerState<HomePage>
   }
 
   void changerPeriode(int index) {}
+
+  Widget singleCat(Category e) {
+    return Container(
+      width: 60,
+      height: 60,
+      margin: const EdgeInsets.all(8),
+      child: CircleAvatar(
+        backgroundColor: Color.fromARGB(e.colorA, e.colorR, e.colorG, e.colorB),
+        child: Icon(
+          IconData(
+            e.iconData,
+            fontFamily: "MaterialIcons",
+          ),
+          color: Colors.white,
+          size: 38,
+        ),
+      ),
+    );
+  }
 }

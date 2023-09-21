@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:testproject/controllers/category_controller.dart';
 import 'package:testproject/controllers/task_controller.dart';
 import 'package:testproject/controllers/user_controller.dart';
 
@@ -13,13 +14,16 @@ final mStorage =
     Provider((ref) => FirebaseStorage.instance.ref().child("Files"));
 final firebaseMessaging = Provider((ref) => FirebaseMessaging.instance);
 
-final taskRef = Provider((ref) => getFirestore().collection("Tasks"));
-final userRef = Provider((ref) => getFirestore().collection("Users"));
-
+final taskRef =
+    Provider<CollectionReference>((ref) => getFirestore().collection("Tasks"));
+final userRef =
+    Provider<CollectionReference>((ref) => getFirestore().collection("Users"));
+final catRef = Provider<CollectionReference>(
+    (ref) => getFirestore().collection("Categories"));
 final authController = Provider((ref) => AuthController(ref));
 final taskController = Provider((ref) => TaskController(ref));
 final userController = Provider((ref) => UserController(ref));
-
+final catController = Provider((ref) => CategoryController(ref));
 getFirestore() {
   return FirebaseFirestore.instance;
 }

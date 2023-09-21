@@ -52,7 +52,7 @@ Voici comment obtenir le certificat de signature de débogage SHA-1 :
 
    Vous devriez voir un fichier nommé "debug.keystore".
 
-4. **Obtenez le certificat SHA-1 :** Utilisez la commande suivante pour obtenir le certificat SHA-1 à partir du fichier de clé de débogage :
+4. **Obtenez le certificat SHA-1 :** Utilisez la commande suivantes pour obtenir le certificat SHA-1 à partir du fichier de clé de débogage :
 
    ```bash
    keytool -list -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android
