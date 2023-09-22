@@ -104,7 +104,7 @@ class HomeCategoryState extends ConsumerState<HomeCategory>
 
             Expanded(
               child: Container(
-                margin: const EdgeInsets.all(8),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(28),
@@ -246,19 +246,32 @@ class HomeCategoryState extends ConsumerState<HomeCategory>
 
   Widget singleCat(Category e) {
     return Container(
-      width: 60,
-      height: 60,
+      width: 45,
       margin: const EdgeInsets.all(8),
-      child: CircleAvatar(
-        backgroundColor: Color.fromARGB(e.colorA, e.colorR, e.colorG, e.colorB),
-        child: Icon(
-          IconData(
-            e.iconData,
-            fontFamily: "MaterialIcons",
+      child: Column(
+        children: [
+          SizedBox(
+            width: 45,
+            height: 45,
+            child: CircleAvatar(
+              backgroundColor:
+                  Color.fromARGB(e.colorA, e.colorR, e.colorG, e.colorB),
+              child: Icon(
+                IconData(
+                  e.iconData,
+                  fontFamily: "MaterialIcons",
+                ),
+                color: Colors.white,
+                size: 38,
+              ),
+            ),
           ),
-          color: Colors.white,
-          size: 38,
-        ),
+          AppText(
+            e.nom,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ),
     );
   }

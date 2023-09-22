@@ -33,6 +33,9 @@ class AuthController {
 
       await ref.read(userController).saveUser(user);
       await ref.read(userController).setupUser();
+      await ref.read(catController).setupCategory(
+            ref.read(mAuth).currentUser!.uid,
+          );
     } catch (e) {
       print(e);
       error = e.toString();
@@ -121,6 +124,11 @@ class AuthController {
     }
 
     user.fcm = await getFcm();
+    if (user.userId.isEmpty) {
+      await ref.read(catController).setupCategory(
+            ref.read(mAuth).currentUser!.uid,
+          );
+    }
     user.userId = ref.read(mAuth).currentUser!.uid;
     await ref.read(UserCredential as ProviderListenable).updateUser(user);
     await ref.read(UserCredential as ProviderListenable).setupUser(user);

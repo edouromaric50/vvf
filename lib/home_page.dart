@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:testproject/components/app_image.dart';
 import 'package:testproject/components/app_text.dart';
+import 'package:testproject/pages/auth/caisses/home_caisse.dart';
 import 'package:testproject/pages/auth/categories/home_category.dart';
 import 'package:testproject/utils/app_const.dart';
 import 'package:testproject/utils/app_func.dart';
@@ -32,7 +33,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     double hCard = 0.50 * getSize(context).height;
     var menus = [
-      ["money.png", "Caisses", AppColor.caisseColor, Container()],
+      ["money.png", "Caisses", AppColor.caisseColor, HomeCaisse()],
       ["closures.png", "Projets", AppColor.projeColor, Container()],
       [
         "categories.png",

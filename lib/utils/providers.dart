@@ -20,10 +20,11 @@ final userRef =
     Provider<CollectionReference>((ref) => getFirestore().collection("Users"));
 final catRef = Provider<CollectionReference>(
     (ref) => getFirestore().collection("Categories"));
+
 final authController = Provider((ref) => AuthController(ref));
 final taskController = Provider((ref) => TaskController(ref));
 final userController = Provider((ref) => UserController(ref));
 final catController = Provider((ref) => CategoryController(ref));
-getFirestore() {
+FirebaseFirestore getFirestore() {
   return FirebaseFirestore.instance;
 }
