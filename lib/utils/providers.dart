@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:testproject/controllers/caisse_controller.dart';
 import 'package:testproject/controllers/category_controller.dart';
 import 'package:testproject/controllers/task_controller.dart';
 import 'package:testproject/controllers/user_controller.dart';
@@ -21,10 +22,14 @@ final userRef =
 final catRef = Provider<CollectionReference>(
     (ref) => getFirestore().collection("Categories"));
 
+final caisseRef = Provider<CollectionReference>(
+    (ref) => getFirestore().collection("Caisses"));
+
 final authController = Provider((ref) => AuthController(ref));
 final taskController = Provider((ref) => TaskController(ref));
 final userController = Provider((ref) => UserController(ref));
 final catController = Provider((ref) => CategoryController(ref));
+final caisseController = Provider((ref) => CaisseController(ref));
 FirebaseFirestore getFirestore() {
   return FirebaseFirestore.instance;
 }

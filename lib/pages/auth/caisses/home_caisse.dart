@@ -1,10 +1,14 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:testproject/components/app_image.dart';
 // import 'package:testproject/components/app_image.dart';
 import 'package:testproject/components/app_text.dart';
+import 'package:testproject/controllers/caisse_controller.dart';
 import 'package:testproject/controllers/category_controller.dart';
+import 'package:testproject/models/caisse_model.dart';
 import 'package:testproject/models/category_model.dart';
+import 'package:testproject/pages/auth/caisses/add_caisse.dart';
 import 'package:testproject/pages/auth/categories/add_category.dart';
 import 'package:testproject/utils/app_const.dart';
 import 'package:testproject/utils/app_func.dart';
@@ -19,6 +23,7 @@ class HomeCaisse extends ConsumerStatefulWidget {
 class HomeCaisseState extends ConsumerState<HomeCaisse>
     with SingleTickerProviderStateMixin {
   late TabController controller;
+  var currentCaisseIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -51,96 +56,87 @@ class HomeCaisseState extends ConsumerState<HomeCaisse>
         child: Column(
           children: [
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // histogram of caisse
-                  Container(
-                    width: getSize(context).width,
-                    height: hCard - 40,
-                    child: Stack(
-                      children: [
-                        Container(
-                          width: getSize(context).width,
-                          height: 100,
-                          decoration: const BoxDecoration(
-                              color: AppColor.caisseColor,
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(48),
-                                bottomRight: Radius.circular(48),
-                              )),
-                        ),
-                        Positioned(
-                            left: 0,
-                            right: 0,
-                            child: Column(
-                              children: [
-                                const AppText(
-                                  "100000 €",
-                                  color: Colors.white,
-                                  size: 35,
-                                  weight: FontWeight.bold,
-                                ),
-                                const SpacerHeight(),
-                                Container(
-                                  height: hCard - 100,
-                                  width: getSize(context).width,
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(28),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 2),
-                                    ],
-                                  ),
-                                  child: buildHistograms(),
-                                ),
-                              ],
-                            ))
-                      ],
-                    ),
-                  ),
-
-                  // translation  List
-
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(28),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 2),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        //List translatiion
-
-                        Divider(),
-                        Center(
-                          child: IconButton(
-                              onPressed: () {
-                                navigateToWidget(context, AddCategory());
-                              },
-                              icon: const Icon(
-                                Icons.add_circle_outline_rounded,
-                                size: 40,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // histogram of caisse
+                    Container(
+                      width: getSize(context).width,
+                      height: hCard - 40,
+                      child: Stack(
+                        children: [
+                          Container(
+                            width: getSize(context).width,
+                            height: 100,
+                            decoration: const BoxDecoration(
                                 color: AppColor.caisseColor,
-                              )),
-                        ),
-                        const SpacerHeight(),
-                      ],
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(48),
+                                  bottomRight: Radius.circular(48),
+                                )),
+                          ),
+                          Positioned(
+                              left: 0,
+                              right: 0,
+                              child: Column(
+                                children: [
+                                  const AppText(
+                                    "100000 €",
+                                    color: Colors.white,
+                                    size: 35,
+                                    weight: FontWeight.bold,
+                                  ),
+                                  const SpacerHeight(),
+                                  Container(
+                                    height: hCard - 100,
+                                    width: getSize(context).width,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(28),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color:
+                                                Colors.black.withOpacity(0.2),
+                                            blurRadius: 2),
+                                      ],
+                                    ),
+                                    child: buildHistograms(),
+                                  ),
+                                ],
+                              ))
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+
+                    // translation  List
+
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(28),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 2),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //List translatiion
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
+
+            // Liste des caisses
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
@@ -151,27 +147,44 @@ class HomeCaisseState extends ConsumerState<HomeCaisse>
                       color: Colors.black.withOpacity(0.2), blurRadius: 2),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  //List translatiion
+              child: ref.watch(getMyCaisses).when(
+                  data: (data) {
+                    return SingleChildScrollView(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //List caisse
 
-                  Divider(),
-                  Center(
-                    child: IconButton(
-                        onPressed: () {
-                          navigateToWidget(context, AddCategory());
-                        },
-                        icon: const Icon(
-                          Icons.add_circle_outline_rounded,
-                          size: 40,
-                          color: AppColor.caisseColor,
-                        )),
-                  ),
-                  const SpacerHeight(),
-                ],
-              ),
+                          for (var i = 0; i < data.length; i++)
+                            buildCaisse(data[i], i),
+                          InkWell(
+                            onTap: () {
+                              navigateToWidget(context, AddCaisse());
+                            },
+                            child: Container(
+                              height: 110,
+                              width: 110,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  border:
+                                      Border.all(color: AppColor.caisseColor)),
+                              child: const Icon(
+                                Icons.add_circle_outline_rounded,
+                                size: 40,
+                                color: AppColor.caisseColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  error: errorLoading,
+                  loading: loadingError),
             ),
+            const SpacerHeight(height: 10),
           ],
         ),
       ),
@@ -269,35 +282,42 @@ class HomeCaisseState extends ConsumerState<HomeCaisse>
 
   void changerPeriode(int index) {}
 
-  Widget singleCat(Category e) {
-    return Container(
-      width: 45,
-      margin: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          SizedBox(
-            width: 45,
-            height: 45,
-            child: CircleAvatar(
-              backgroundColor:
-                  Color.fromARGB(e.colorA, e.colorR, e.colorG, e.colorB),
-              child: Icon(
-                IconData(
-                  e.iconData,
-                  fontFamily: "MaterialIcons",
-                ),
-                color: Colors.white,
-                size: 38,
+  buildCaisse(Caisse caisse, int i) {
+    return InkWell(
+      onTap: () {
+        currentCaisseIndex = i;
+        setState(() {});
+      },
+      child: Container(
+          height: 110,
+          width: 110,
+          margin: i == 0
+              ? const EdgeInsets.only(right: 5)
+              : const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              color: currentCaisseIndex == i
+                  ? AppColor.caisseColor
+                  : Colors.transparent,
+              border: Border.all(color: AppColor.caisseColor)),
+          child: Column(
+            children: [
+              AppImage(
+                url: 'assets/img/money.png',
+                width: 50,
               ),
-            ),
-          ),
-          AppText(
-            e.nom,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
+              SpacerHeight(),
+              AppText(
+                "caisse ${caisse.name}",
+                weight: FontWeight.w700,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                align: TextAlign.center,
+                color: currentCaisseIndex == i ? Colors.white : Colors.black,
+              ),
+            ],
+          )),
     );
   }
 }
